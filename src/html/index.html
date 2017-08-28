@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>小程序入口生成 二维码 app sacn</title>
+    <link rel="icon" type="image/x-icon" href="./img/icon.png">
+    <style lang="">
+        .app {
+            text-align: center;
+        }
+
+        div {
+            margin-bottom: 20px;
+        }
+
+        .address {
+            width: 500px;
+            height: 30px;
+        }
+
+        .mt {
+            margin: 0 auto;
+        }
+
+        .home-img {
+            height: 160px;
+            background: url(./img/load.svg) no-repeat center center;
+        }
+
+        .home-img img {
+            display: block;
+        }
+        #loader{
+            height: 300px;
+            background:  url(./img/load.svg) no-repeat center center;
+            background-size: 60px 60px;
+        }
+        .button {
+            width: 150px;
+            line-height: 30px;
+            background-color: #6bd1ff;
+            color: #FFF;
+            border: 0;
+            cursor: pointer;
+        }
+        .text-center{
+            text-align: center
+        }
+        .text-center img{
+            margin: 0 auto;
+        }
+        .button:hover {
+            opacity: .6;
+        }
+
+        .hide {
+            display: none;
+        }
+    </style>
+    <link rel="stylesheet" href="./dist/notyf.min.css">
+</head>
+
+<body>
+    <div class="nav">
+
+    </div>
+    <div class="app">
+        <div>
+            <img src="./img/icon.png" alt="">
+        </div>
+        <div class="hide">
+            <img src="" alt="" id="weixin-qr-code">
+        </div>
+        <div>
+            微信扫一扫 小程序入口生成 二维码 - 当前版本 <span class="" id="version">v2.0.0</span>
+        </div>
+        <div>
+            输入团ID 生成 团详细页二维码
+        </div>
+        <div>
+            <input type="text" class="address" id="address" placeholder="输入团id 如果创建失败将显示错误图片"></input>
+        </div>
+        <div id="combine" class="text-center" style="display:none"></div>
+        <div class="loader" id="loader">
+                        
+        </div>
+        <div>
+            <button onclick="creatCode()" class="button" id="btn">
+                生成
+            </button>
+        </div>
+        <div>
+            如果您在使用过程中遇到了问题，可以点击右下角的沟通图标，与我进行交流
+        </div>
+    </div>
+    <script src="./dist/notyf.min.js"></script>
+    <script src="./js/ajax.js"></script>
+    <script src="./dist/qcode-decoder.min.js"></script>
+    <script src="./dist/qrcode.js"></script>
+    <script>
+        var request = ajax({
+            method: 'get',
+            url: '/api',
+            data: {}
+        })
+
+        var imgHide = document.getElementById("weixin-qr-code")
+        var combine = document.getElementById("combine")
+        var loader = document.getElementById("loader")
+
+        request.then(function (response) {
+
+            var versionSpan = document.getElementById("version")
+
+            versionSpan.innerHTML = response.Version ? "v" + response.Version + " By " + response.Name : "";
+        })
+
+        var _notyf = new Notyf();
+
+        function creatCode() {
+           
+            var path = 'page/groupDetail/groupDetail?id=';
+            
+            var textarea = document.getElementById("address")
+            var btn = document.getElementById("btn")
+
+            var id = Trim(textarea.value)
+            loader.innerHTML = ''
+
+            btn.innerHTML = "生成中...";
+
+            //var reg = /^(https?:\/\/)([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/
+           
+            // return 
+            var str = '/code?path=' + path + id + '&width=200';
+
+            var imgLoad = '<img src='+ str +' alt="">';
+
+            loader.innerHTML = imgLoad
+
+            btn.innerHTML = "生成";
+        }
+
+        function Trim(str) {
+            return str.replace(/(^\s*)|(\s*$)/g, "");
+        }
+
+        function checkUrl(urlString) {
+
+            var reg = /(http|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&:/~\+#]*[\w\-\@?^=%&/~\+#])?/;
+            if (!reg.test(urlString)) {
+                return false
+            }
+
+            return true
+        }
+
+        function DencoderImg() {
+             _notyf.confirm('ok 真棒 (●\'◡\'●)');
+                        btn.innerHTML = "生成";
+
+           QCodeDecoder()
+                .decodeFromImage(imgHide, function (er, res) {
+
+                    console.log(res);
+                    if (res) {
+
+                        createQrcode(res)
+                    }
+                })
+
+
+        }
+        var _qrcode = new QRCode("combine");
+
+        function createQrcode(str) {
+
+            _qrcode.makeCode(str);
+
+            initLoad()
+        }
+
+        function initLoad(bool){
+            if(bool){
+                combine.style = "display:none;";
+                loader.style = "display:block;";
+            }else{
+                combine.style = "display:block;";
+                loader.style = "display:none;";
+            }
+            
+        }
+    </script>
+    <script>
+        (function (i, s, o, g, r, a, m) {
+            i["DaoVoiceObject"] = r;
+            i[r] = i[r] || function () {
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date();
+            a = s.createElement(o), m = s.getElementsByTagName(o)[0];
+            a.async = 1;
+            a.src = g;
+            a.charset = "utf-8";
+            m.parentNode.insertBefore(a, m)
+        })(window, document, "script", ('https:' == document.location.protocol ? 'https:' : 'http:') +
+            "//widget.daovoice.io/widget/6bc54fe0.js", "daovoice")
+
+        window.onload = function () {
+            daovoice('init', {
+                app_id: "6bc54fe0"
+            });
+            daovoice('update');
+        }
+    </script>
+</body>
+
+</html>
